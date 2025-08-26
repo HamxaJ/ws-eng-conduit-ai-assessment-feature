@@ -1,1 +1,44 @@
-<p>TODO</p>
+<div class="home-page">
+  <div class="container page">
+    <div class="row">
+      <div class="col-md-12">
+        <h1 class="text-xs-center">Conduit Roster</h1>
+        
+        <div *ngIf="rosterUsers$ | async as users; else loading">
+          <div *ngIf="users.length > 0; else noUsers">
+            <div class="article-preview" *ngFor="let user of users">
+              <div class="article-meta">
+                <a [routerLink]="['/profile', user.username]">
+                  <img [src]="user.image" alt="Avatar" />
+                </a>
+                <div class="info">
+                  <a class="author" [routerLink]="['/profile', user.username]">{{ user.username }}</a>
+                  <span class="date">Articles: {{ user.articleCount }}</span>
+                  <span class="date">Total Favorites: {{ user.favoritesCount }}</span>
+                  <span class="date" *ngIf="user.firstArticleDate">
+                    First Article: {{ user.firstArticleDate | date:'MMM d, y' }}
+                  </span>
+                  <span class="date" *ngIf="!user.firstArticleDate">
+                    First Article: No articles yet
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <ng-template #noUsers>
+            <div class="article-preview">
+              <p>No users found.</p>
+            </div>
+          </ng-template>
+        </div>
+        
+        <ng-template #loading>
+          <div class="article-preview">
+            <p>Loading roster...</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>
