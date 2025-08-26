@@ -18,7 +18,11 @@ export class AppModule implements NestModule, OnModuleInit {
   constructor(private readonly orm: MikroORM) {}
 
   async onModuleInit(): Promise<void> {
-    await this.orm.getMigrator().up();
+    try {
+      await this.orm.getMigrator().up();
+    } catch (error) {
+      console.warn('Failed to run migrations, database might not be available:', error instanceof Error ? error.message : String(error));
+    }
   }
 
   // for some reason the auth middlewares in profile and article modules are fired before the request context one,
