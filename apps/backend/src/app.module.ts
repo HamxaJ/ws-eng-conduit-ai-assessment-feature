@@ -5,19 +5,24 @@ import { MikroOrmMiddleware, MikroOrmModule } from '@mikro-orm/nestjs';
 import { AppController } from './app.controller';
 import { ArticleModule } from './article/article.module';
 import { ProfileModule } from './profile/profile.module';
+import { RosterModule } from './roster/roster.module';
 import { TagModule } from './tag/tag.module';
 import { UserModule } from './user/user.module';
 import ormConfig from '../mikro-orm.config';
 @Module({
   controllers: [AppController],
-  imports: [MikroOrmModule.forRoot(ormConfig), ArticleModule, UserModule, ProfileModule, TagModule],
+  imports: [MikroOrmModule.forRoot(ormConfig), ArticleModule, UserModule, ProfileModule, TagModule, RosterModule],
   providers: [],
 })
 export class AppModule implements NestModule, OnModuleInit {
   constructor(private readonly orm: MikroORM) {}
 
   async onModuleInit(): Promise<void> {
-    await this.orm.getMigrator().up();
+    try {
+      await this.orm.getMigrator().up();
+    } catch (error) {
+      console.warn('Failed to run migrations, database might not be available:', error instanceof Error ? error.message : String(error));
+    }
   }
 
   // for some reason the auth middlewares in profile and article modules are fired before the request context one,
